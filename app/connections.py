@@ -1,11 +1,10 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
-
 import logging
-import os
 from functools import wraps
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import pandas as pd
 import sqlalchemy
+from retrying import retry
 from sqlalchemy import exc
 from sqlalchemy.sql.elements import TextClause
 
@@ -29,24 +28,25 @@ class DataBaseClient:
 
     def __init__(
         self,
-        user=None,
-        password=None,
-        host=None,
-        db=None,
-        port=None,
-        dialect=None,
-        driver=None,
+        user: str = None,
+        password: str = None,
+        host: str = None,
+        db: str = None,
+        port: str = None,
+        dialect: str = None,
+        driver: str = None,
+        echo: bool = False,
         *args: Any,
         **kwargs: Any,
     ) -> None:
-
         self.engine = sqlalchemy.create_engine(
             f"{dialect}+{driver}://{user}:{password}@{host}:{port}/{db}",
-            echo=True,
+            echo=echo,
             *args,
             **kwargs,
         )
 
+    @retry(wait_fixed=5000, stop_max_attempt_number=5)
     @with_connection
     def execute_read_query(
         self,
@@ -62,6 +62,7 @@ class DataBaseClient:
         try:
             if dataframe:
                 result_data = pd.read_sql(sql=query, con=connection)
+                logging.info(f"✅ Successfully read data with shape {result_data.shape}")
                 return result_data
 
             query_result = connection.execute(query, *query_args, **query_kwargs)
@@ -72,6 +73,7 @@ class DataBaseClient:
             connection.close()
             raise error
 
+    @retry(wait_fixed=5000, stop_max_attempt_number=5)
     @with_connection
     def execute_query(
         self,
@@ -92,6 +94,7 @@ class DataBaseClient:
                 transaction.rollback()
                 raise error
 
+    @retry(wait_fixed=5000, stop_max_attempt_number=5)
     @with_connection
     def save_dataframe_to_the_database(
         self,
@@ -119,4 +122,3 @@ class DataBaseClient:
         logging.info(
             f"✅ Successfully saved data with shape {data.shape} to the {schema}.{table_name}",
         )
-

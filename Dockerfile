@@ -1,13 +1,15 @@
-FROM python:3.8
+FROM python:3.10.12
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /InSpace
 
 # Copy the local codebase to the container
-COPY . /app
+COPY app ./app
+COPY data ./data
+COPY requirements.txt ./requirements.txt
 
 # Install any dependencies
-RUN pip install -r requirements.txt --no-cachdir
+RUN pip install -r requirements.txt --no-cache-dir
 
 # Define the command to run ETL script
-CMD ["python", "-m", "etl"]
+CMD ["python", "-m", "app.etl"]

@@ -1,35 +1,18 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-from sqlalchemy import text
-from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv())
+import logging
 import os
+
 import pandas as pd
+from dotenv import find_dotenv, load_dotenv
+from sqlalchemy import text
+
+from app import queries
+from app.configs import RAW_DATA_PATH
 from app.connections import DataBaseClient
 
-# # Read and execute the SQL script from a file
-# script_file = 'migration.sql'  # Replace with the path to your .sql file
-# with open(script_file, 'r') as sql_file:
-#     sql_script = sql_file.read()
+load_dotenv(find_dotenv())
 
-# # Execute the SQL script
-# try:
-#     session.execute(text("SHOW GRANTS FOR 'mysql_user'@'%';"))
-#     session.execute(text("GRANT ALL PRIVILEGES ON mysql_database.* TO 'mysql_user'@'%';"))
-#     session.execute(text("FLUSH PRIVILEGES;"))
-#     session.execute(text("LOAD DATA INFILE '/data/user.csv' INTO TABLE user FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES;"))
-#     session.commit()
-#     print('SQL script executed successfully.')
-# except Exception as e:
-#     session.rollback()
-#     print(f'Error executing SQL script: {str(e)}')
-# finally:
-#     session.close()
+logging.getLogger().setLevel(logging.INFO)
 
-
-data_user = pd.read_csv('data/user.csv')
-data_space_attendee = pd.read_csv('data/space_attendee.csv')
-data_space_session_info = pd.read_csv('data/space_session_info.csv')
 
 mysql_client = DataBaseClient(
     user=os.getenv("MYSQL_ROOT_USER"),
@@ -39,14 +22,62 @@ mysql_client = DataBaseClient(
     port=os.getenv("MYSQL_PORT"),
     dialect="mysql",
     driver="pymysql",
+    echo=False
 )
 
-mysql_client.save_dataframe_to_the_database(
-    data=data_user, table_name="user", schema=os.getenv("MYSQL_DATABASE"), index=False, if_exists='replace'
+pg_client = DataBaseClient(
+    user=os.getenv("POSTGRES_USER"),
+    password=os.getenv("POSTGRES_PASSWORD"),
+    host=os.getenv("POSTGRES_HOST"),
+    db=os.getenv("POSTGRES_DATABASE"),
+    port=os.getenv("POSTGRES_PORT"),
+    dialect="postgresql",
+    driver="psycopg2",
+    echo=False
 )
-mysql_client.save_dataframe_to_the_database(
-    data=data_space_attendee, table_name="space_attendee", schema=os.getenv("MYSQL_DATABASE"), index=False, if_exists='replace'
-)
-mysql_client.save_dataframe_to_the_database(
-    data=data_space_session_info, table_name="space_session_info", schema=os.getenv("MYSQL_DATABASE"), index=False, if_exists='replace'
-)
+
+
+def upload_csv_to_mysql():
+    """
+    The upload_csv_to_mysql function is designed 
+    to facilitate the process of uploading data from a local CSV file into a MySQL database.
+    """
+    schema = os.getenv("MYSQL_DATABASE")
+    for csv_file in os.listdir(RAW_DATA_PATH):
+        base_name = csv_file.split('.')[0]
+        data = pd.read_csv(os.path.join(RAW_DATA_PATH, csv_file))
+        mysql_client.save_dataframe_to_the_database(
+            data=data, table_name=base_name, schema=schema, index=False, if_exists='replace'
+        )
+
+
+def mysql_to_postgres_data_migration() -> None:
+    """
+    This function performs a data migration task, extracting data from a MySQL database,
+    transforming it as needed, and uploading it to a PostgreSQL database. It is designed
+    to facilitate the seamless transfer of data between the two database systems.
+    """
+    global mysql_client, pg_client
+
+    table_query_mapping = {
+        'weekly_activity': queries.query_extract_weekly_activity,
+        'total_activity': queries.query_total_activity,
+        'filtered_session': queries.query_filtering_session
+    }
+    for table_name, query in table_query_mapping.items():
+        data_transformed = mysql_client.execute_read_query(
+            query=text(query),
+            dataframe=True,
+        )
+        pg_client.save_dataframe_to_the_database(
+            data=data_transformed, 
+            table_name=table_name, 
+            schema=os.getenv("POSTGRES_SCHEMA"), 
+            index=False, 
+            if_exists='replace'
+        )
+
+
+if __name__ == '__main__':
+    upload_csv_to_mysql()
+    mysql_to_postgres_data_migration()

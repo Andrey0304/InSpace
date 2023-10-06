@@ -14,7 +14,7 @@ services:
       POSTGRES_DATABASE: ${POSTGRES_DATABASE}
       PGDATA: /var/lib/postgresql/data/pgdata
     networks:
-      - postgres
+      - mynetwork
     restart: unless-stopped
     logging:
       options:
@@ -27,14 +27,16 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      # MYSQL_USER: ${MYSQL_USER}
-      # MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - 3306:3306
+    networks:
+      - mynetwork
     restart: unless-stopped
-    volumes:
-      - ./my.cnf:/etc/mysql/conf.d/my.cnf
+    # volumes:
+    #   - ./my.cnf:/etc/mysql/conf.d/my.cnf
     logging:
       options:
         max-file: "5"
@@ -60,7 +62,7 @@ services:
   #       max-size: "20m"
   grafana:
     container_name: grafana_container
-    image: grafana/grafana:latest
+    image: grafana/grafana:9.5.12
     ports:
       - 3000:3000
     environment:
@@ -71,21 +73,34 @@ services:
     depends_on:
       - mysql
       - postgres
+    networks:
+      - mynetwork
 
-  # etl:
-  #   build: .
-  #   depends_on:
-  #     - mysql
-  #     - postgres
-  #   environment:
-  #     MYSQL_HOST: ${MYSQL_HOST}
-  #     MYSQL_USER: ${MYSQL_USER}
-  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-  #     MYSQL_DATABASE: ${MYSQL_DATABASE}
-  #     POSTGRES_HOST: ${POSTGRES_HOST}
-  #     POSTGRES_USER: ${POSTGRES_USER}
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  #     POSTGRES_DATABASE: ${POSTGRES_DATABASE}
+  app:
+    container_name: app_container
+    build: .
+    depends_on:
+      - mysql
+      - postgres
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PORT: ${MYSQL_PORT}
+      
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DATABASE: ${POSTGRES_DATABASE}
+      POSTGRES_SCHEMA: ${POSTGRES_SCHEMA}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    networks:
+      - mynetwork
+    logging:
+      options:
+        max-file: "5"
+        max-size: "20m"
 
 
 volumes:
@@ -93,5 +108,4 @@ volumes:
   postgres:
 
 networks:
-  postgres:
-    driver: bridge
+  mynetwork:  # Define the custom network
