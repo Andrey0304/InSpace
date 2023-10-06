@@ -37,11 +37,13 @@ pg_client = DataBaseClient(
 )
 
 
-def upload_csv_to_mysql():
+def upload_csv_to_mysql() -> None:
     """
     The upload_csv_to_mysql function is designed 
     to facilitate the process of uploading data from a local CSV file into a MySQL database.
     """
+    global mysql_client
+
     schema = os.getenv("MYSQL_DATABASE")
     for csv_file in os.listdir(RAW_DATA_PATH):
         base_name = csv_file.split('.')[0]

@@ -12,4 +12,4 @@ COPY requirements.txt ./requirements.txt
 RUN pip install -r requirements.txt --no-cache-dir
 
 # Define the command to run ETL script
-CMD ["python", "-m", "app.etl"]
+CMD ["python", "-m", "app.main"]
