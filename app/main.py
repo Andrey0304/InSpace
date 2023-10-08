@@ -2,14 +2,11 @@ import logging
 import os
 
 import pandas as pd
-from dotenv import find_dotenv, load_dotenv
 from sqlalchemy import text
 
 from app import queries
 from app.configs import RAW_DATA_PATH
 from app.connections import DataBaseClient
-
-load_dotenv(find_dotenv())
 
 logging.getLogger().setLevel(logging.INFO)
 
