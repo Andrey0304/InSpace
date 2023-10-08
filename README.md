@@ -6,9 +6,7 @@ This project involves designing and implementing an ETL (Extract, Transform, Loa
 - [Project Overview](#project-overview)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
-- [ETL Pipeline](#etl-pipeline)
-- [Dockerization](#dockerization)
-- [Grafana Integration (Optional)](#grafana-integration-optional)
+- [Grafana Integration](#grafana-integration)
 - [Alternative approaches and Suggestions](#alternative-approaches-and-suggestions)
 - [Conclusion](#conclusion)
 
