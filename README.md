@@ -89,7 +89,7 @@ When working on your ETL project using a custom Python application, there are se
 To get started with Poetry:
 
 1. Install Poetry by following the instructions on their website.
-2. Create a `pyproject.toml` file in your project's root directory and define your project dependencies using Poetry's `pyproject.toml` format.
+2. Create a `pyproject.toml` file in project's root directory and define project dependencies using Poetry's `pyproject.toml` format.
 3. Use Poetry commands to manage project's virtual environment, dependencies, and packaging.
 
 By using Poetry, we can ensure a cleaner, more consistent, and more maintainable approach to managing our project's dependencies.
