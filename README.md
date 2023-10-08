@@ -74,9 +74,10 @@ docker logs app_container
 
 ## Grafana Integration 
 
-To see Postgres metrics in the Grafana dashboard, you need to go to http://localhost:3000/d/postgresmetrics  
+To see Postgres metrics in the Grafana dashboard, you need to go to  
+http://localhost:3000/d/postgresmetrics or http://localhost:3000/d/postgresmetrics_v2  
 
-<img src="assets/grafana_login.png" width="200" height="200"> <img src="assets/grafana_dashboard.png" width="600" height="200">
+<img src="assets/grafana_login.png" width="200" height="200"> <img src="assets/postgres_metrics.png" width="600" height="200">
 
 ## Alternative approaches and Suggestions
 
