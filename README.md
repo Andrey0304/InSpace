@@ -65,6 +65,11 @@ To get started with this project, follow these steps:
 ```bash
 docker-compose up -d --build
 ```
+7) To check the success of ETL you need to run
+```bash
+docker logs app_container
+```
+<img src="assets/logs.png" width="900" height="150">
 
 
 ## Grafana Integration 
