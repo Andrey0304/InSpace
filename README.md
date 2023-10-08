@@ -32,7 +32,7 @@ Here's a structured overview of the project directory with descriptions for each
     - `Dockerfile`: Configuration file for building a Docker image for application.
     - `docker-compose.yml`: Configuration for Docker Compose, defining services and containers.
     - `docker_cleanup.sh`: A shell script for cleaning up Docker containers and resources.
-    - `DataDescription.md`: Documentation describing the data used in the project.
+    - `DATADESCRIPTION.md`: Documentation describing the data used in the project.
     - `.gitignore`: A file specifying which files and directories to ignore when using Git.
     - `.dockerignore`: A file specifying which files and directories to ignore when using docker.
     - `.env`: Environment file for storing configuration variables.
