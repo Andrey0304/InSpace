@@ -69,14 +69,14 @@ docker-compose up -d --build
 ```bash
 docker logs app_container
 ```
-<img src="assets/logs.png" width="800" height="100">
+<img src="assets/logs.png" width="850" height="100">
 
 
 ## Grafana Integration 
 
 To see Postgres metrics in the Grafana dashboard, you need to go to http://localhost:3000/d/postgresmetrics  
 
-<img src="assets/grafana_login.png" width="200" height="200"> <img src="assets/grafana_dashboard.png" width="800" height="200">
+<img src="assets/grafana_login.png" width="200" height="200"> <img src="assets/grafana_dashboard.png" width="650" height="200">
 
 ## Alternative approaches and Suggestions
 
