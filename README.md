@@ -1,6 +1,6 @@
 # ETL Pipeline and Dockerization Project
 
-This project involves designing and implementing an ETL (Extract, Transform, Load) pipeline to handle various data-related operations. The pipeline includes importing CSV data into a MySQL database, calculating aggregate data and storing it in a PostgreSQL database, Dockerizing the ETL application, and using Docker Compose to deploy both MySQL and PostgreSQL databases and run the ETL code within containers. Additionally, we will discuss optional components like Grafana for monitoring.
+This project involves designing and implementing an ETL (Extract, Transform, Load) pipeline to handle various data-related operations. The pipeline includes importing CSV data into a MySQL database, calculating aggregate data and storing it in a PostgreSQL database, Dockerizing the ETL application, and using Docker Compose to deploy both MySQL and PostgreSQL databases and run the ETL code within containers. Additionally, we created optional components like Grafana for monitoring.
 
 ## Table of Contents
 - [Project Overview](#project-overview)
